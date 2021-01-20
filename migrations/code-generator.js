@@ -178,8 +178,9 @@ class MigrationCodeGenerator {
             }
 
             const args = (singleColumn.length > 0) ? `"${singleColumn.name}", ${singleColumn.length}` : `'${singleColumn.name}'`;
-
-            const columnDefinition = `$table->${type}(${args})`;
+            const nullable = (singleColumn.nullable) ? `->nullable()`: "";
+            const unique = (singleColumn.unique) ? `->unique()`: "";
+            const columnDefinition = `$table->${type}(${args})${unique}${nullable}`;
 
             this.writer.writeLine(columnDefinition);
 
