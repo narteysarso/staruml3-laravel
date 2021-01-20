@@ -27,6 +27,7 @@ const codegen = require('../utils/codegen-utils');
 const fileUtils = require('../utils/file-utils');
 const codeClassGen = require('../code-class-generator');
 const classGenerator = require('../class-generator');
+const MIGRATION_METHOD_TYPE_MAP = require('./migration-methods-types-map');
 
 /**
  *  Code Generator
@@ -141,24 +142,13 @@ class MigrationCodeGenerator {
     }
 
     getMigrationMethodFromType (columnType) {
-        switch (columnType) {
-            case "BIGINT": return "bigInteger";
-            case "BLOB": return "binary";
-            case "BOOLEAN": return "boolean";
-            case "CHAR": return "char";
-            case "DATE": return "method";
-            case "DATETIME": return "dateTime";
-            case "DECIMAL": return "decimal";
-            case "DOUBLE": return "double";
-            case "FLOAT": return "float";
-            case "GEOMETRY": return "geometry";
-            case "GEOMETRYCOLLECTION": return "geometryCollection";
-            case "VARCHAR": return "string";
-            case "TEXT": return "text";
-            case "INTEGER": return "integer";
-            default:
-                return null;
+        command = MIGRATION_METHOD_TYPE_MAP[columnType];
+        if(!MIGRATION_METHOD_TYPE_MAP[columnType]){
+            return null;
         }
+
+        return command;
+        
     }
 
     /**
