@@ -167,6 +167,10 @@ class MigrationCodeGenerator {
         this.writer.outdent();
     }
 
+    /**
+     * Generate code for a given column
+     * @param {type.Model.ERDEntityColumn} columns 
+     */
     generateTableColumns(columns) {
         if (!columns) {
             return
@@ -187,6 +191,18 @@ class MigrationCodeGenerator {
         });
     }
 
+    /**
+     * 
+     * @param {type.Model.ERDEntityTag} tags 
+     * @returns {Object} newTags
+     */
+    extractTags(tags){
+        const newTags = tags.reduce((previousValue, tag) => {
+            const {name, ...otherParams} = tag;
+            return  {...previousValue, [ name ]: otherParams};
+        },{});
+        return newTags;
+    }
     /**
      * Generate codes from a given element
      *
