@@ -168,7 +168,7 @@ class MigrationCodeGenerator {
             var columnDefinition = "$table->";
             var type = this.getMigrationMethodFromType(singleColumn.type);
             if (type !== null) {
-                var args = "'" + singleColumn.name + "'";
+                var args = `'${singleColumn.name}'`;
                 if (type === "string") {
                     args += (singleColumn.length > 0) ? "," + singleColumn.length : "";
                 }
