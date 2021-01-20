@@ -164,6 +164,10 @@ class MigrationCodeGenerator {
 
         this.generateTableColumns(elem.model.columns);
 
+        const tableTags = this.extractTags(elem.model);
+
+        this.generateTableIndexes(tableTags);
+
         this.writer.outdent();
     }
 
@@ -228,6 +232,24 @@ class MigrationCodeGenerator {
         },{});
         return newTags;
     }
+
+    /**
+     * Generate indexes for table
+     * @param {Object} tags 
+     */
+    generateTableIndexes(tags){
+        const indexes = require('./migration-indexes');
+        const indexKeys = Object.keys(indexes);
+        indexKeys.forEach((indexName) => {
+            const indexType = tags[indexName];
+            if(!indexType){
+                return;
+            }
+
+            this.writer.writeLine(`$table->${indexes[indexName]}(${indexType['value']})`);
+        })
+    }
+
     /**
      * Generate codes from a given element
      *
