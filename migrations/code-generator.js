@@ -190,7 +190,30 @@ class MigrationCodeGenerator {
 
             this.writer.writeLine(columnDefinition);
 
+            this.generateColumnRelation(singleColumn, columnTags['onDelete']);
+
         });
+    }
+
+    /**
+     * Generates foreign key relation for column
+     * @param {type.Model.ERDEntityColumn} column 
+     * @param {String} onDelete 
+     */
+    generateColumnRelation(column, onDelete="cascade") {
+        if(!column.foreignKey){
+            return;
+        }
+
+        if(!column.referenceTo){
+            return;
+        }
+
+        const referenceColumn = column.referenceTo.name;
+        const referenceModel = column.referenceTo._parent.name;
+
+        const referenceDefinition = `$table->foreign('${column.name}')->references('${referenceColumn}')->on('${referenceModel}')->onDelete('${onDelete}')`
+        this.writer.writeLine(referenceDefinition);
     }
 
     /**
