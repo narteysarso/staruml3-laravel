@@ -41,7 +41,7 @@ class MigrationCodeGenerator {
      * @param {type.FileManager}
      * @param {type.CodeWriter}
      */
-    constructor (baseModel, fileManager, writer) {
+    constructor(baseModel, fileManager, writer) {
         /** @member {type.Model} */
         this.baseModel = baseModel;
 
@@ -68,7 +68,7 @@ class MigrationCodeGenerator {
      *
      * @returns {*}
      */
-    generateFileName (elem) {
+    generateFileName(elem) {
         let now = new Date();
         let terms = [];
         let extension = '.php';
@@ -97,7 +97,7 @@ class MigrationCodeGenerator {
         let tableName = elem.model.name;
         var classCodeGenerator = this;
 
-        let className = 'Create' + (tableName.charAt(0).toUpperCase() + tableName.slice(1))  + 'Table';
+        let className = 'Create' + (tableName.charAt(0).toUpperCase() + tableName.slice(1)) + 'Table';
 
         let generator = new classGenerator.ClassGenerator(className);
         generator.addImport('Illuminate\\Support\\Facades\\Schema;');
@@ -123,7 +123,7 @@ class MigrationCodeGenerator {
         (new codeClassGen.CodeBaseClassGenerator(generator, this.writer)).generate();
     }
 
-    generateUpBody (tableName, elem) {
+    generateUpBody(tableName, elem) {
         this.writer.indent();
 
         this.writer.writeLine("Schema::create('" + tableName + "', function (Blueprint $table) {");
@@ -133,7 +133,7 @@ class MigrationCodeGenerator {
         this.writer.outdent();
     }
 
-    generateDownBody (tableName) {
+    generateDownBody(tableName) {
         this.writer.indent();
 
         this.writer.writeLine("Schema::dropIfExists('" + tableName + "');");
@@ -141,15 +141,15 @@ class MigrationCodeGenerator {
         this.writer.outdent();
     }
 
-    getMigrationMethodFromType (columnType) {
+    getMigrationMethodFromType(columnType) {
         const command = MIGRATION_METHOD_TYPE_MAP[columnType];
-        if(!MIGRATION_METHOD_TYPE_MAP[columnType]){
+        if (!MIGRATION_METHOD_TYPE_MAP[columnType]) {
             app.dialogs.showErrorDialog(`Column type (${columnType}) is not defined in laravel`)
             return null;
         }
 
         return command;
-        
+
     }
 
     /**
@@ -158,26 +158,32 @@ class MigrationCodeGenerator {
      *
      * @param {type.Model} elem
      */
-    generateTableSchema (elem) {
-        const columns = elem.model.columns;
+    generateTableSchema(elem) {
 
         this.writer.indent();
 
+        this.generateTableColumns(elem.model.columns);
+
+        this.writer.outdent();
+    }
+
+    generateTableColumns(columns) {
+        if (!columns) {
+            return
+        }
         columns.forEach((singleColumn) => {
             const type = this.getMigrationMethodFromType(singleColumn.type);
-            if(!type){
+            if (!type) {
                 return;
             }
-            
-            const args =  (singleColumn.length > 0) ?  `"${singleColumn.name}", ${singleColumn.length}`: `'${singleColumn.name}'`;
 
-            const columnDefinition =`$table->${type}(${args})`;
+            const args = (singleColumn.length > 0) ? `"${singleColumn.name}", ${singleColumn.length}` : `'${singleColumn.name}'`;
+
+            const columnDefinition = `$table->${type}(${args})`;
 
             this.writer.writeLine(columnDefinition);
 
         });
-
-        this.writer.outdent();
     }
 
     /**
@@ -187,7 +193,7 @@ class MigrationCodeGenerator {
      * @param {string} path
      * @param {Object} options
      */
-    generate (elem) {
+    generate(elem) {
         let result = new $.Deferred();
         let filePath;
 
@@ -210,7 +216,7 @@ class MigrationCodeGenerator {
  * @param {string} basePath
  * @param {Object} options
  */
-function generate (baseModel, basePath, options) {
+function generate(baseModel, basePath, options) {
     var fileManager = new fileUtils.FileManager(basePath, options);
     fileManager.prepareMigrationsFolder(
         function () {
@@ -220,7 +226,7 @@ function generate (baseModel, basePath, options) {
 
                 codeGenerator.generate(child);
             });
-        }, 
+        },
         function () {
             app.dialogs.showErrorDialog("Canceled operation by user.");
 
