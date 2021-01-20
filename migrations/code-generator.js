@@ -142,8 +142,9 @@ class MigrationCodeGenerator {
     }
 
     getMigrationMethodFromType (columnType) {
-        command = MIGRATION_METHOD_TYPE_MAP[columnType];
+        const command = MIGRATION_METHOD_TYPE_MAP[columnType];
         if(!MIGRATION_METHOD_TYPE_MAP[columnType]){
+            app.dialogs.showErrorDialog(`Column type (${columnType}) is not defined in laravel`)
             return null;
         }
 
