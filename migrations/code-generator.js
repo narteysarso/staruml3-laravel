@@ -164,7 +164,7 @@ class MigrationCodeGenerator {
 
         this.generateTableColumns(elem.model.columns);
 
-        const tableTags = this.extractTags(elem.model);
+        const tableTags = this.extractTags(elem.model.tags);
 
         this.generateTableIndexes(tableTags);
 
