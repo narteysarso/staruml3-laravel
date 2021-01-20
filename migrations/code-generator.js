@@ -159,25 +159,23 @@ class MigrationCodeGenerator {
      * @param {type.Model} elem
      */
     generateTableSchema (elem) {
-        let columns = elem.model.columns;
+        const columns = elem.model.columns;
 
         this.writer.indent();
 
-        for (var i in columns)  {
-            var singleColumn = columns[i];
-            var columnDefinition = "$table->";
-            var type = this.getMigrationMethodFromType(singleColumn.type);
-            if (type !== null) {
-                var args = `'${singleColumn.name}'`;
-                if (type === "string") {
-                    args += (singleColumn.length > 0) ? "," + singleColumn.length : "";
-                }
-
-                columnDefinition  += type + "(" + args +")";
-
-                this.writer.writeLine(columnDefinition);
+        columns.forEach((singleColumn) => {
+            const type = this.getMigrationMethodFromType(singleColumn.type);
+            if(!type){
+                return;
             }
-        }
+            
+            const args =  (singleColumn.length > 0) ?  `"${singleColumn.name}", ${singleColumn.length}`: `'${singleColumn.name}'`;
+
+            const columnDefinition =`$table->${type}(${args})`;
+
+            this.writer.writeLine(columnDefinition);
+
+        });
 
         this.writer.outdent();
     }
