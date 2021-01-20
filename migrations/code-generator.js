@@ -180,11 +180,13 @@ class MigrationCodeGenerator {
             if (!type) {
                 return;
             }
-
+            
+            const columnTags = this.extractTags(singleColumn.tags);
             const args = (singleColumn.length > 0) ? `"${singleColumn.name}", ${singleColumn.length}` : `'${singleColumn.name}'`;
             const nullable = (singleColumn.nullable) ? `->nullable()`: "";
             const unique = (singleColumn.unique) ? `->unique()`: "";
-            const columnDefinition = `$table->${type}(${args})${unique}${nullable}`;
+            const defaults = (columnTags.default) ? `->default(${columnTags.default})`: "";
+            const columnDefinition = `$table->${type}(${args})${unique}${nullable}${defaults}`;
 
             this.writer.writeLine(columnDefinition);
 
