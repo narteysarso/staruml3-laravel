@@ -109,7 +109,7 @@ class CodeBaseClassGenerator {
     }
 
     writeMethod(methodGenerator) {
-        this.writer.writeLine(methodGenerator.getScope() + ' function ' + methodGenerator.getName() +'()');
+        this.writer.writeLine(`${methodGenerator.getScope()} function ${methodGenerator.getName()}(${methodGenerator.getParams().join(',')})`);
         this.writer.writeLine('{');
         if (methodGenerator.getBody() === null) {
             this.writer.indent();
