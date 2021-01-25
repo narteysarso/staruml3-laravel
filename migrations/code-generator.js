@@ -173,7 +173,7 @@ class MigrationCodeGenerator {
 
     /**
      * Generate code for a given column
-     * @param {type.Model.ERDEntityColumn} columns 
+     * @param {type.ERDEntityColumn} columns 
      */
     generateTableColumns(columns) {
         if (!columns) {
@@ -222,7 +222,7 @@ class MigrationCodeGenerator {
 
     /**
      * 
-     * @param {type.Model.ERDEntityTag} tags 
+     * @param {type.ERDEntityTag} tags 
      * @returns {Object} newTags
      */
     extractTags(tags){

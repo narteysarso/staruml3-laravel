@@ -22,6 +22,7 @@
  */
 
 const migrationGenerator = require('./migrations/code-generator');
+const modelGenerator = require('./models/code-generator');
 
 /**
  * Helper function to return the base model
@@ -32,6 +33,12 @@ function _getBase(callback) {
     app.elementPickerDialog.showDialog('Select a base model to generate codes', 
         null, type.ERDDiagram).then(callback);
 }
+
+function _getModelBase(callback) {
+    app.elementPickerDialog.showDialog('Select a base model to generate codes', 
+    null, type.UMLClassDiagram).then(callback);
+}
+
 
 /**
  * Helper function to return the path
@@ -80,10 +87,25 @@ function _handleMigrationsGenerate (base, path, options) {
  * @param {string} path
  * @param {Object} options
  */
-function _handleModelsGenerate (base, path, options) {
+function _handleModelsGenerate(base, path, options) {
     // TODO: trigger to generate models
-}
+    path = (!path) ? _askForPath() : path;
+    if (!path) {
+        // user cancel operation
+        return;
+    }
 
+    if (!base) {
+        _getModelBase(function ({buttonId, returnValue}) {
+            if (buttonId === 'ok') {
+                base = returnValue;
+                modelGenerator.generate(base, path, options);
+            }
+        });
+    } else {
+        modelGenerator.generate(base, path, options);
+    }    
+}
 function init () {
     app.commands.register('laravel_migrations:generate', _handleMigrationsGenerate);
     app.commands.register('laravel_models:generate', _handleModelsGenerate);

@@ -42,7 +42,7 @@
         this.migrationsFullPath = basePath + '/migrations';
 
         /** @member {string} */
-        this.modelsFullPath = basePath;
+        this.modelsFullPath = basePath + '/models';
     }
     
     getBasePath () {
@@ -59,6 +59,23 @@
 
     getOptions() {
         return this.options;
+    }
+    
+    prepareModelsFolder(onPrepared, onPreparedCancel) {
+        if (fs.existsSync(this.modelsFullPath)){
+            var buttonId = app.dialogs.showConfirmDialog("Exist a folder with the same name, overwrite?");
+            if (buttonId != 'ok') {
+                onPreparedCancel();
+
+                return;
+            }
+
+            this.deleteFolderRecursive(this.modelsFullPath);
+        }
+
+        fs.mkdirSync(this.modelsFullPath);
+
+        onPrepared();
     }
 
     prepareMigrationsFolder(onPrepared, onPreparedCancel) {

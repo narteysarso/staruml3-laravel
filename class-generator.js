@@ -23,10 +23,12 @@
 
 class ClassMethodGenerator {
 
-    constructor(name, scope, description) {
+    constructor(name, scope, description, type) {
         this.name = name;
 
         this.scope = scope;
+
+        this.type = type;
 
         this.description = description;
 
@@ -57,6 +59,10 @@ class ClassMethodGenerator {
         return this.params;
     }
 
+    getType() {
+        return this.type;
+    }
+
     addReturn(singleReturn) {
         this.returns.push(singleReturn);
     }
@@ -74,6 +80,40 @@ class ClassMethodGenerator {
     }
 }
 
+class ClassVariableGenerator {
+    constructor(name, scope, values, description) {
+        this.name = name;
+
+        this.scope = scope;
+
+        this.description = description;
+
+        this.values = values;
+        this.returns = [];
+    }
+
+    getName(){
+        return this.name;
+    }
+
+    getReturns(){
+        return this.returns;
+    }
+
+    getScope(){
+        return this.scope;
+    }
+
+    getDescription(){
+        return this.description;
+    }
+
+    getValues(){
+        return this.values;
+    }
+
+}
+
 class ClassGenerator {
 
     constructor(name) {
@@ -84,6 +124,8 @@ class ClassGenerator {
         this.methods = [];
 
         this.extends = [];
+
+        this.variables = [];
 
         this.implements = [];
     }
@@ -102,6 +144,10 @@ class ClassGenerator {
 
     addMethodGenerator(singleMethodGenerator) {
         this.methods.push(singleMethodGenerator)
+    }
+
+    addVariableGenerator(singleVariableGenerator){
+        this.variables.push(singleVariableGenerator);
     }
 
     addExtend(singleExtend) {
@@ -123,7 +169,14 @@ class ClassGenerator {
     getMethodGenerators() {
         return this.methods;
     }
+
+    getVariableGenerators(){
+        return this.variables;
+    }
 }
 
-exports.ClassGenerator = ClassGenerator;
-exports.ClassMethodGenerator = ClassMethodGenerator;
+module.exports = {
+    ClassGenerator,
+    ClassMethodGenerator,
+    ClassVariableGenerator
+}

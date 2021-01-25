@@ -21,6 +21,7 @@
  *
  */
 
+const { count } = require('console');
 const fs = require('fs');
 const path = require('path');
 const codegen = require('./utils/codegen-utils');
@@ -32,7 +33,7 @@ class CodeBaseClassGenerator {
     /**
      * @constructor
      */
-    constructor (schema, writer) {
+    constructor(schema, writer) {
         /** @member {string} schema */
         this.schema = schema;
 
@@ -89,6 +90,10 @@ class CodeBaseClassGenerator {
         let writer = this.writer;
         let codeGenerator = this;
 
+        this.schema.getVariableGenerators().forEach((singleVariableGenerator) => {
+            codeGenerator.blockDocs(singleVariableGenerator);
+            codeGenerator.writeVariable(singleVariableGenerator);
+        })
         this.schema.getMethodGenerators().forEach(function (singleMethodGenerator) {
             codeGenerator.blockDocs(singleMethodGenerator);
             codeGenerator.writeMethod(singleMethodGenerator);
@@ -98,14 +103,14 @@ class CodeBaseClassGenerator {
     }
 
     blockDocs(methodGenerator) {
-        this.writer.writeLine ('/**');
-        this.writer.writeLine (' * ' + methodGenerator.getDescription());
-        this.writer.writeLine (' *');
+        this.writer.writeLine('/**');
+        this.writer.writeLine(' * ' + methodGenerator.getDescription());
+        this.writer.writeLine(' *');
         let writer = this.writer;
         methodGenerator.getReturns().forEach(function (singleReturn) {
-            writer.writeLine (' * @return ' + singleReturn.type);
+            writer.writeLine(' * @return ' + singleReturn.type);
         });
-        this.writer.writeLine ( " */" );
+        this.writer.writeLine(" */");
     }
 
     writeMethod(methodGenerator) {
@@ -119,6 +124,26 @@ class CodeBaseClassGenerator {
             methodGenerator.getBody()();
         }
         this.writer.writeLine('}');
+    }
+
+    writeVariable(variableGenerator) {
+        const values = variableGenerator.getValues();
+        const prepareArrayValues = (values) => {
+            return `[${values.reduce((previous, value) => {
+                if (typeof value === 'string') {
+                    return `\n\t\t"${value}",${previous}`;
+                } else {
+                    return `\n\t\t${value},${previous}`;
+                }
+            }, "")}\n\t];`
+        }
+
+        const prepareSingleValue = (value) => {
+            return  `${typeof values === 'string' ? `"${values}"` : value}`;
+        }
+        const preparedValues = !Array.isArray(values) ?  prepareSingleValue(values): prepareArrayValues(values);
+         
+        this.writer.writeLine(`${variableGenerator.getScope()} $${variableGenerator.getName()} = ${preparedValues}`);
     }
 }
 
