@@ -106,8 +106,12 @@ class CodeBaseClassGenerator {
     }
 
     blockDocs(methodGenerator) {
+        const description = methodGenerator.getDescription();
+        if(!description){
+            return;
+        }
         this.writer.writeLine('/**');
-        this.writer.writeLine(' * ' + methodGenerator.getDescription());
+        this.writer.writeLine(' * ' + description);
         this.writer.writeLine(' *');
         let writer = this.writer;
         methodGenerator.getReturns().forEach(function (singleReturn) {
@@ -147,6 +151,7 @@ class CodeBaseClassGenerator {
         const preparedValues = !Array.isArray(values) ?  prepareSingleValue(values): prepareArrayValues(values);
          
         this.writer.writeLine(`${variableGenerator.getScope()} $${variableGenerator.getName()} = ${preparedValues}`);
+        this.writer.writeLine("");
     }
 
     writeTrait(traits){
@@ -155,6 +160,7 @@ class CodeBaseClassGenerator {
         }
 
         this.writer.writeLine(`use ${traits.join(', ')}; `);
+        this.writer.writeLine("");
     }
 }
 
