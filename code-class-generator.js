@@ -89,10 +89,13 @@ class CodeBaseClassGenerator {
     mainClassCodeBody() {
         let writer = this.writer;
         let codeGenerator = this;
-
+        
+        this.writeTrait(this.schema.getTraits());
+        
         this.schema.getVariableGenerators().forEach((singleVariableGenerator) => {
             codeGenerator.blockDocs(singleVariableGenerator);
             codeGenerator.writeVariable(singleVariableGenerator);
+            writer.writeLine('');
         })
         this.schema.getMethodGenerators().forEach(function (singleMethodGenerator) {
             codeGenerator.blockDocs(singleMethodGenerator);
@@ -144,6 +147,14 @@ class CodeBaseClassGenerator {
         const preparedValues = !Array.isArray(values) ?  prepareSingleValue(values): prepareArrayValues(values);
          
         this.writer.writeLine(`${variableGenerator.getScope()} $${variableGenerator.getName()} = ${preparedValues}`);
+    }
+
+    writeTrait(traits){
+        if(!traits){
+            return; 
+        }
+
+        this.writer.writeLine(`use ${traits.join(', ')}; `);
     }
 }
 

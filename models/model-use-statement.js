@@ -6,4 +6,4 @@ const MODEL_USE_STMT = {
 }
 
 
-module.exports = MMODEL_USE_STMT;
+module.exports = MODEL_USE_STMT;

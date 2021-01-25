@@ -27,6 +27,7 @@ const fileUtils = require('../utils/file-utils');
 const codeClassGen = require('../code-class-generator');
 const classGenerator = require('../class-generator');
 const MODEL_IMPORTS = require('./model-imports');
+const MODEL_USE_STMT = require('./model-use-statement');
 
 class ModelCodeGenerator {
     /**
@@ -83,23 +84,26 @@ class ModelCodeGenerator {
         const modelTags = this.extractTags(elem.model.tags);
         let generator = new classGenerator.ClassGenerator(className);
         generator.addImport('Illuminate\\Database\\Eloquent\\Model;');
-        
+
         Object.keys(modelTags).forEach(tagName => {
             const importStatment = MODEL_IMPORTS[tagName];
-            if(!importStatment){
-                return;
+            const trait = MODEL_USE_STMT[tagName];
+            if (importStatment) {
+                generator.addImport(importStatment);
             }
-            generator.addImport(importStatment);
+            if (trait) {
+                generator.addTrait(trait);
+            }
         });
 
-        if(modelTags['authenticatable']){
+        if (modelTags['authenticatable']) {
             generator.addExtend('Authenticatable');
-        }else{
+        } else {
             generator.addExtend('Model');
         }
 
-        const fillable = new classGenerator.ClassVariableGenerator('fillable', 'protected', 
-        this.generateModelAttributes(elem), '');
+        const fillable = new classGenerator.ClassVariableGenerator('fillable', 'protected',
+            this.generateModelAttributes(elem), '');
         // fillable.addVariable('name')
         generator.addVariableGenerator(fillable);
 
@@ -114,11 +118,11 @@ class ModelCodeGenerator {
      * @param {type.ERDEntityTag} tags 
      * @returns {Object} newTags
      */
-    extractTags(tags){
+    extractTags(tags) {
         const newTags = tags.reduce((previousValue, tag) => {
-            const {name, ...otherParams} = tag;
-            return  {...previousValue, [ name ]: otherParams};
-        },{});
+            const { name, ...otherParams } = tag;
+            return { ...previousValue, [name]: otherParams };
+        }, {});
         return newTags;
     }
 

@@ -128,6 +128,8 @@ class ClassGenerator {
         this.variables = [];
 
         this.implements = [];
+
+        this.traits = [];
     }
 
     getName() {
@@ -154,12 +156,20 @@ class ClassGenerator {
         this.extends.push(singleExtend);
     }
 
+    addTrait(trait){
+        this.traits.push(trait);
+    }
+
     addImplement(singleImplement) {
         this.implements.push(singleImplement);
     }
 
     getExtends() {
         return this.extends;
+    }
+
+    getTraits(){
+        return this.traits;
     }
 
     getImplements() {
