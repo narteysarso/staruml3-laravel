@@ -107,9 +107,6 @@ class ModelCodeGenerator {
         // fillable.addVariable('name')
         generator.addVariableGenerator(fillable);
 
-        //
-        console.log(elem);
-
         (new codeClassGen.CodeBaseClassGenerator(generator, this.writer)).generate();
     }
 
