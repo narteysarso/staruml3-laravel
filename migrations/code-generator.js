@@ -105,13 +105,13 @@ class MigrationCodeGenerator {
         generator.addImport('Illuminate\\Database\\Migrations\\Migration;');
         generator.addExtend('Migration');
 
-        let upMethodGenerator = new classGenerator.ClassMethodGenerator('up', 'public', 'Run the migrations.');
+        let upMethodGenerator = new classGenerator.ClassMethodGenerator('up', 'public', null, 'Run the migrations.');
         upMethodGenerator.addReturn({ "type": "void" });
         upMethodGenerator.setBody(function () {
             classCodeGenerator.generateUpBody(tableName, elem);
         });
 
-        let downMethodGenerator = new classGenerator.ClassMethodGenerator('down', 'public', 'Reverse the migrations.');
+        let downMethodGenerator = new classGenerator.ClassMethodGenerator('down', 'public', null, 'Reverse the migrations.');
         downMethodGenerator.addReturn({ "type": "void" });
         downMethodGenerator.setBody(function () {
             classCodeGenerator.generateDownBody(tableName);

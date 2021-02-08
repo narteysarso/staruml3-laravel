@@ -28,6 +28,7 @@ const codeClassGen = require('../code-class-generator');
 const classGenerator = require('../class-generator');
 const MODEL_IMPORTS = require('./model-imports');
 const MODEL_USE_STMT = require('./model-use-statement');
+const MODEL_RELATION_MAP = require('./model-relation-map');
 
 class ModelCodeGenerator {
     /**
@@ -125,12 +126,48 @@ class ModelCodeGenerator {
 
     generateModelAttributes(elem) {
         const attributes = elem.model.attributes;
-        if (!attributes) {
+        if (!Array.isArray(attributes)) {
             return null;
         }
-        return attributes.map((singleAttribute) => {
-            return singleAttribute.name;
-        });
+        return attributes.reduce((previous, singleAttribute) => {
+            console.log(singleAttribute);
+            if (singleAttribute.visibility !== 'public') {
+                return previous;
+            }
+            return [...previous, singleAttribute.name];
+        }, []);
+    }
+
+    generateModelRelations(elem) {
+        const associations = elem.model.ownedElements;
+        if (!Array.isArray(elements)) {
+            return null;
+        }
+        return associations.reduce((previous, association) => {
+            if (!association instanceof type.UMLAssociation) {
+                return previous;
+            }
+
+            let references =  [ association?.end1, association?.end2]
+            
+            if(references[0].name !== references[1].name){
+
+               references = references.filter((assoc) => assoc.name !== elem.model.name);
+            }
+
+            const relations = references.reduce((current, reference) => {
+                const referenceName = reference.name;
+                const relationType = `${reference.name}${MODEL_RELATION_MAP[reference.multiplicity]}`;
+                const tags = this.extractTags(reference.tags);
+                const foreignKey = tags['foreignKey'] || '';
+                const localKey = tags['localKey'] || '';
+                const foreignTable = tags['foreignTable'] || '';
+                const localTable = tags['localTable'] || '';
+                return [...current, { relationType, referenceName, foreignKey, localKey, foreignTable, localTable }]
+            })
+            
+            return [...previous, ...relations];
+        }, []);
     }
 
     /**
@@ -144,6 +181,7 @@ class ModelCodeGenerator {
         let result = new $.Deferred();
         let filePath;
 
+        console.log(type);
         if (elem instanceof type.UMLClassView) {
             this.generateClassCode(elem);
 
@@ -171,6 +209,7 @@ function generate(baseModel, basePath, options) {
     var fileManager = new fileUtils.FileManager(basePath, options);
     fileManager.prepareModelsFolder(
         function () {
+
             baseModel.ownedViews.forEach(child => {
                 let writer = new codegen.CodeWriter('\t');
                 let codeGenerator = new ModelCodeGenerator(baseModel, fileManager, writer);
