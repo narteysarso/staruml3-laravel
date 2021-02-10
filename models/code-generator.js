@@ -181,7 +181,6 @@ class ModelCodeGenerator {
         let result = new $.Deferred();
         let filePath;
 
-        console.log(type);
         if (elem instanceof type.UMLClassView) {
             this.generateClassCode(elem);
 
